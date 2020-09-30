@@ -106,9 +106,9 @@ func main() {
 		jsonDecoder := json.NewDecoder(resp.Body)
 		err = jsonDecoder.Decode(&scrollResponse)
 		if err != nil {
-			log.Println("Couldn't parse sleeping 10s ...")
+			log.Println("Couldn't parse sleeping 10s ... : " + shellRed(err))
 			time.Sleep(10 * time.Second)
-			log.Fatal(err)
+			continue
 		}
 		if len(scrollResponse.Hits.Hits) < 1 {
 			// Seems like there's no more results, exit
