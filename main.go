@@ -72,9 +72,15 @@ func main() {
 		log.Fatal("Json decode error. Make sure you are targeting a Kibana >5 instance : ", shellRed(err))
 	}
 	log.Println("Got scrollId : " + shellYellow(scrollResponse.ScrollId))
-	log.Println(fmt.Sprintf("Dumping %s documents to stdout :", shellYellow(scrollResponse.Hits.Total.Value)))
+	var totalHits int64
+	if parsedTotalHits, parsedInt := scrollResponse.Hits.Total.(float64); parsedInt {
+		totalHits = int64(parsedTotalHits)
+	} else {
+		totalHits = int64(scrollResponse.Hits.Total.(map[string]interface{})["value"].(float64))
+	}
+	log.Println(fmt.Sprintf("Dumping %s documents to stdout :", shellYellow(totalHits)))
 	// Progress bar, yeaaah
-	bar := progressbar.Default(scrollResponse.Hits.Total.Value, "Docs")
+	bar := progressbar.Default(totalHits, "Docs")
 	for _, hit := range scrollResponse.Hits.Hits {
 		bar.Add(1)
 		hit, _ := json.Marshal(hit)
@@ -131,9 +137,7 @@ type ScrollResponse struct {
 	Scroll   string `json:"scroll"`
 	ScrollId string `json:"_scroll_id"`
 	Hits     struct {
-		Total struct {
-			Value int64 `json:"value"`
-		} `json:"total"`
+		Total interface{} `json:"total"`
 		Hits []interface{} `json:"hits"`
 	} `json:"hits"`
 }
