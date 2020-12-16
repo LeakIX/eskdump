@@ -2,6 +2,10 @@
 
 Allows dumping for ElasticSearch servers behind Kibana > 5 instances.
 
+## Deprecated
+
+Check [ES Toolkit](https://github.com/LeakIX/estk) instead
+
 ## Usage
 
 ```shell script
